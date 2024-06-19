@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db'; 
 import authRoutes from './routes/login'; 
-
+import orderRoutes from './routes/orderRoute';
 dotenv.config();
 
 const app: express.Application = express();
@@ -20,6 +20,8 @@ connectDB()
   });
 
 app.use('/api/auth', authRoutes);
+// Use order routes
+app.use('/api/orders', orderRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Home');
