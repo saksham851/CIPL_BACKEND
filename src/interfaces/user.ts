@@ -1,29 +1,36 @@
 import mongoose from 'mongoose';
 
 // Interface for User document
-interface UserDoc extends mongoose.Document {
+export interface UserDoc extends mongoose.Document {
+  _id:string;
   username: string;
+  role: 'user' | 'admin';
   password: string;
   email: string;
-  role?: string;
-}
-
-// Interface for Order document
-interface OrderDoc extends mongoose.Document {
-  userId: mongoose.Types.ObjectId;
-  orderId: number;
-  orderDate: Date;
-  items: string[];
 }
 
 // Interface for Address document
-interface AddressDoc extends mongoose.Document {
-  userId: mongoose.Types.ObjectId;
-  addressLine1: string;
-  addressLine2?: string;
+export interface AddressDoc extends mongoose.Document {
+  user_id: mongoose.Types.ObjectId;
+  address: string;
   city: string;
   state: string;
   zipcode: string;
 }
 
-export { UserDoc, OrderDoc, AddressDoc };
+// Interface for Product document
+export interface ProductDoc extends mongoose.Document {
+  user_id: mongoose.Types.ObjectId;
+  name: string;
+}
+
+// Interface for Order document
+export interface OrderDoc extends mongoose.Document {
+  user_id: mongoose.Types.ObjectId;
+  order_date: Date;
+  items: {
+    quantity: number;
+  }[];
+  total_amount: number;
+  shipping_address: mongoose.Types.ObjectId;
+}

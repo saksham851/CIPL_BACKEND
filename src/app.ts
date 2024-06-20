@@ -3,7 +3,10 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db'; 
 import authRoutes from './routes/login'; 
-import orderRoutes from './routes/orderRoute';
+import productRoute from './routes/AddProductRoute';
+import addressRoutes from './routes/addressRoute'
+import orderRoute  from './routes/orderRoute'
+
 dotenv.config();
 
 const app: express.Application = express();
@@ -19,13 +22,19 @@ connectDB()
 
   });
 
+//route for login
 app.use('/api/auth', authRoutes);
 // Use order routes
-app.use('/api/orders', orderRoutes);
+app.use('/api/product', productRoute);
+//route for address
+app.use('/api', addressRoutes);
+//route for order
+app.use('/api', orderRoute);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Home');
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
