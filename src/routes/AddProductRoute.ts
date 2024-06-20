@@ -21,7 +21,6 @@ router.post('/create-product', adminOnly, async (req: Request, res: Response) =>
       return res.status(400).json({ message: 'User not authenticated' });
     }
     const { _id } = req.user;
-    console.log("_id",_id)
     const { name } = req.body;
 
     if (!name) {

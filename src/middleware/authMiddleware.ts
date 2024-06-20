@@ -15,8 +15,6 @@ declare global {
 export const adminOnly = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.cookies.token;
-    console.log(token);
-
     if (!token) {
       return res.status(401).json({ message: 'Unauthorized: No token provided' });
     }
@@ -49,8 +47,6 @@ export const adminOnly = async (req: Request, res: Response, next: NextFunction)
 export const userOnly = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.cookies.token;
-    console.log(token);
-
     if (!token) {
       return res.status(401).json({ message: 'Unauthorized: No token provided' });
     }

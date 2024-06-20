@@ -7,6 +7,7 @@ export interface UserDoc extends mongoose.Document {
   role: 'user' | 'admin';
   password: string;
   email: string;
+  profilePhoto?: string;
 }
 
 // Interface for Address document

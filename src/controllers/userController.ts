@@ -3,9 +3,13 @@ import jwt from 'jsonwebtoken';
 import { hashPassword, comparePasswords } from '../utils/bcryptUtils';
 import { User } from '../model/userModel';
 import { UserDoc } from '../interfaces/user';
+import { Request, Response } from 'express';
 
-export const loginOrSignup = async (req: express.Request, res: express.Response): Promise<void> => {
+const router = express.Router();
+
+export const loginOrSignup = async (req: Request, res: Response): Promise<void> => {
   const { username, password, email, role } = req.body;
+
 
   if (typeof username !== 'string' || typeof password !== 'string' || typeof email !== 'string' || (role && typeof role !== 'string')) {
     res.status(400).json({ message: 'Invalid input: username, password, email, and role must all be strings.' });
@@ -24,11 +28,14 @@ export const loginOrSignup = async (req: express.Request, res: express.Response)
     } else {
       console.log('Creating new user');
       const passwordHash = await hashPassword(password);
+
+     
       const newUser = new User({
         username,
         email,
         password: passwordHash,
         role,
+        profilePhoto: req.file?.filename, 
       });
 
       existingUser = await newUser.save();
