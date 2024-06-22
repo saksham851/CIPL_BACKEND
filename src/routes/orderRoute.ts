@@ -2,7 +2,6 @@ import express, { Request, Response } from 'express';
 import { userOnly } from '../middleware/authMiddleware';
 import { Order } from '../model/orderModel';
 import { Address } from '../model/addressModel';
-import { Product } from '../model/ProductModel';
 import { UserDoc } from '../interfaces/user';
 
 declare global {

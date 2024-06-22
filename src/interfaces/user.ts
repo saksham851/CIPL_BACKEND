@@ -16,7 +16,7 @@ export interface AddressDoc extends mongoose.Document {
   address: string;
   city: string;
   state: string;
-  zipcode: string;
+  zipcode: number;
 }
 
 // Interface for Product document
@@ -30,6 +30,7 @@ export interface OrderDoc extends mongoose.Document {
   user_id: mongoose.Types.ObjectId;
   order_date: Date;
   items: {
+    item_number: number;
     quantity: number;
   }[];
   total_amount: number;

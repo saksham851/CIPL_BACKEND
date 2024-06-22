@@ -6,7 +6,7 @@ import authRoutes from './routes/login';
 import productRoute from './routes/AddProductRoute';
 import addressRoutes from './routes/addressRoute'
 import orderRoute  from './routes/orderRoute'
-
+import adminRoute from './routes/adminRoute'
 dotenv.config();
 
 const app: express.Application = express();
@@ -30,6 +30,8 @@ app.use('/api/product', productRoute);
 app.use('/api', addressRoutes);
 //route for order
 app.use('/api', orderRoute);
+//route for admin-report
+app.use('/api/admin', adminRoute);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Home');
