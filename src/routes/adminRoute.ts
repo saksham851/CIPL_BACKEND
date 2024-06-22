@@ -1,4 +1,3 @@
-//=-------------------------------------------------------------------------------
 // import express, { Request, Response } from 'express';
 // import { adminOnly } from '../middleware/authMiddleware';
 // import { User } from '../model/userModel';
@@ -10,16 +9,23 @@
 
 // router.get('/user-report', adminOnly, async (req: Request, res: Response) => {
 //   try {
-//     const { item_number, page = 1, limit = 10 } = req.query;
+//     const { item_number, page = 1, limit = 10, sort_by, sort_direction = 'asc' } = req.query;
 
 //     let users: UserDoc[];
 
+//     let sortOptions: any = {}; 
+
+//     if (sort_by && ['username', 'email', 'role'].includes(sort_by as string)) {
+//       sortOptions = { [sort_by as string]: sort_direction === 'desc' ? -1 : 1 };
+//     } else {
+//       sortOptions = { 'username': sort_direction === 'desc' ? -1 : 1 }; // Default sorting by username ascending
+//     }
+
 //     if (!item_number) {
 //       const skip = (Number(page) - 1) * Number(limit);
-//       users = await User.find({}).skip(skip).limit(Number(limit)) as UserDoc[];
+//       users = await User.find({}).sort(sortOptions).skip(skip).limit(Number(limit)) as UserDoc[];
 //     } else {
 //       const itemNum = parseInt(item_number as string, 10);
-
 //       const usersWithMatchingOrders = await User.aggregate([
 //         {
 //           $lookup: {
@@ -42,7 +48,7 @@
 //     const userReports = await Promise.all(users.map(async (user) => {
 //       let orders: OrderDoc[] = [];
 
-//           if (item_number) {
+//       if (item_number) {
 //         const itemNum = parseInt(item_number as string, 10);
 //         orders = await Order.find({ user_id: user._id, 'items.item_number': itemNum }).exec();
 //         orders = orders.map(order => ({
@@ -81,16 +87,16 @@
 
 // export default router;
 
-//---------------------------------------------------------
 
 
 import express, { Request, Response } from 'express';
+
 import { adminOnly } from '../middleware/authMiddleware';
 import { User } from '../model/userModel';
 import { Order } from '../model/orderModel';
 import { Address } from '../model/addressModel';
-import { UserDoc, AddressDoc, OrderDoc } from '../interfaces/user';
-
+import {AddressDoc, OrderDoc, UserDoc} from '../interfaces/user'
+// Routes
 const router = express.Router();
 
 router.get('/user-report', adminOnly, async (req: Request, res: Response) => {
@@ -99,19 +105,19 @@ router.get('/user-report', adminOnly, async (req: Request, res: Response) => {
 
     let users: UserDoc[];
 
-    let sortOptions: any = {}; 
+    let sortOptions: any = {};
 
     if (sort_by && ['username', 'email', 'role'].includes(sort_by as string)) {
       sortOptions = { [sort_by as string]: sort_direction === 'desc' ? -1 : 1 };
     } else {
-      sortOptions = { 'username': sort_direction === 'desc' ? -1 : 1 }; // Default sorting by username ascending
+      sortOptions = { 'username': sort_direction === 'desc' ? -1 : 1 };
     }
 
     if (!item_number) {
       const skip = (Number(page) - 1) * Number(limit);
       users = await User.find({}).sort(sortOptions).skip(skip).limit(Number(limit)) as UserDoc[];
     } else {
-      const itemNum = parseInt(item_number as string, 10);
+      const itemNumPrefix = item_number as string;
       const usersWithMatchingOrders = await User.aggregate([
         {
           $lookup: {
@@ -123,7 +129,7 @@ router.get('/user-report', adminOnly, async (req: Request, res: Response) => {
         },
         {
           $match: {
-            'orders.items.item_number': itemNum
+            'orders.items.item_number': { $regex: `^${itemNumPrefix}` }
           }
         }
       ]) as UserDoc[];
@@ -135,11 +141,11 @@ router.get('/user-report', adminOnly, async (req: Request, res: Response) => {
       let orders: OrderDoc[] = [];
 
       if (item_number) {
-        const itemNum = parseInt(item_number as string, 10);
-        orders = await Order.find({ user_id: user._id, 'items.item_number': itemNum }).exec();
+        const itemNumPrefix = item_number as string;
+        orders = await Order.find({ user_id: user._id, 'items.item_number': { $regex: `^${itemNumPrefix}` } }).exec() as OrderDoc[];
         orders = orders.map(order => ({
           ...order.toObject(),
-          items: order.items.filter(item => item.item_number === itemNum)
+          items: order.items.filter(item => item.item_number.toString().startsWith(itemNumPrefix))
         })) as OrderDoc[];
       } else {
         orders = await Order.find({ user_id: user._id }).exec() as OrderDoc[];
@@ -171,6 +177,4 @@ router.get('/user-report', adminOnly, async (req: Request, res: Response) => {
   }
 });
 
-export default router;
-
-
+ export default router;
