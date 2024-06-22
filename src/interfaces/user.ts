@@ -30,7 +30,7 @@ export interface OrderDoc extends mongoose.Document {
   user_id: mongoose.Types.ObjectId;
   order_date: Date;
   items: {
-    item_number: number;
+    item_number: string;
     quantity: number;
   }[];
   total_amount: number;
